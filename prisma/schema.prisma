@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+}
+
+enum DonationTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String
+  role          Role         @default(USER)
+  articles      Article[]
+  donations     Donation[]
+  donationStats DonationStats?
+  subscription  Subscription?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model DonationStats {
+  id              String       @id @default(cuid())
+  userId          String       @unique
+  user            User         @relation(fields: [userId], references: [id])
+  totalDonated    Float
+  lastDonation    DateTime?
+  currentTier     DonationTier
+  nextTierProgress Float
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Donation {
+  id        String   @id @default(cuid())
+  amount    Float
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  message   String?
+  anonymous Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  amount       Float
+  interval     String   // monthly, yearly
+  status       String   // active, cancelled, expired
+  startDate    DateTime
+  nextBillDate DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Article {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  content       String
+  excerpt       String?
+  featuredImage String?
+  status        Status   @default(DRAFT)
+  authorId      String
+  author        User     @relation(fields: [authorId], references: [id])
+  categoryId    String
+  category      Category @relation(fields: [categoryId], references: [id])
+  publishedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  articles    Article[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
