@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,8 +33,14 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-bold text-purple-600">
-              Nie rakovine
+            <Link href="/" className="relative w-40 h-12">
+              <Image
+                src="/images/logo.png"
+                alt="Nie rakovine logo"
+                fill
+                className="object-contain"
+                priority
+              />
             </Link>
           </div>
 
