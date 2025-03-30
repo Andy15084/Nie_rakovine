@@ -1,11 +1,17 @@
-import { PrismaAdapter } from "@auth/prisma-adapter";
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
 
+// Add proper types for the user
+interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
@@ -54,17 +60,23 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
-        token.id = user.id;
+        return {
+          ...token,
+          role: (user as User).role,
+          id: (user as User).id,
+        };
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
-        (session.user as any).role = token.role;
-        (session.user as any).id = token.id;
-      }
-      return session;
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          role: token.role as string,
+          id: token.id as string,
+        },
+      };
     },
   },
 }; 

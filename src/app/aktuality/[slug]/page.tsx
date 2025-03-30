@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from "@/components/Navbar";
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 
 async function getArticle(slug: string) {
@@ -28,9 +28,11 @@ async function getArticle(slug: string) {
     return article;
   } catch (error) {
     console.error('Error fetching article:', error);
-    return null;
+    throw new Error('Failed to fetch article');
   }
 }
+
+type ArticleWithRelations = NonNullable<Awaited<ReturnType<typeof getArticle>>>;
 
 export default async function ArticlePage({ params }: { params: { slug: string } }) {
   const article = await getArticle(params.slug);
@@ -67,7 +69,7 @@ export default async function ArticlePage({ params }: { params: { slug: string }
             <div className="flex items-center justify-center gap-4 text-gray-600">
               <span>{article.author.name}</span>
               <span>•</span>
-              <span>{new Date(article.publishedAt).toLocaleDateString('sk-SK')}</span>
+              <span>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('sk-SK') : ''}</span>
             </div>
           </div>
         </section>

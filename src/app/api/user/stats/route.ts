@@ -1,63 +1,50 @@
-import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session) {
       return NextResponse.json(
-        { message: 'Unauthorized' },
+        { error: "You must be logged in to view stats" },
         { status: 401 }
       );
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: {
+        email: session.user.email!,
+      },
       include: {
-        donationStats: true,
+        donations: true,
       },
     });
 
     if (!user) {
       return NextResponse.json(
-        { message: 'User not found' },
+        { error: "User not found" },
         { status: 404 }
       );
     }
 
-    // If donationStats don't exist, create them
-    if (!user.donationStats) {
-      const stats = await prisma.donationStats.create({
-        data: {
-          userId: user.id,
-          totalDonated: 0,
-          currentTier: 'BRONZE',
-          nextTierProgress: 0,
-          lastDonation: null,
-        },
-      });
-
-      return NextResponse.json({
-        totalDonated: stats.totalDonated,
-        currentTier: stats.currentTier,
-        nextTierProgress: stats.nextTierProgress,
-        lastDonation: stats.lastDonation,
-      });
-    }
+    const totalDonated = user.donations.reduce(
+      (sum, donation) => sum + donation.amount,
+      0
+    );
 
     return NextResponse.json({
-      totalDonated: user.donationStats.totalDonated,
-      currentTier: user.donationStats.currentTier,
-      nextTierProgress: user.donationStats.nextTierProgress,
-      lastDonation: user.donationStats.lastDonation,
+      totalDonated,
+      donationsCount: user.donations.length,
     });
   } catch (error) {
-    console.error('Error fetching user stats:', error);
+    console.error("Error fetching user stats:", error);
     return NextResponse.json(
-      { message: 'Error fetching user stats' },
+      { error: "Failed to fetch user stats" },
       { status: 500 }
     );
   }

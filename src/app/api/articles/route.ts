@@ -6,27 +6,11 @@ import { authOptions } from '@/lib/auth';
 export async function GET(request: Request) {
   try {
     console.log('API GET request received');
-    
-    // First, let's check all articles regardless of status
-    const allArticles = await prisma.article.findMany({
-      include: {
-        category: true,
-        author: {
-          select: {
-            name: true,
-          },
-        },
-      },
-    });
-    console.log('Total articles in database:', allArticles.length);
 
-    // Now get only published articles
+    // For public view, only get published articles
     const articles = await prisma.article.findMany({
       where: {
-        OR: [
-          { status: 'PUBLISHED' },
-          { status: 'published' }
-        ]
+        status: 'PUBLISHED',
       },
       include: {
         category: true,
@@ -44,29 +28,22 @@ export async function GET(request: Request) {
     console.log('Published articles found:', articles.length);
 
     // Format articles for public view
-    const formattedArticles = articles.map(article => {
-      console.log('Processing article:', {
-        id: article.id,
-        title: article.title,
-        status: article.status
-      });
-      
-      return {
-        id: article.id,
-        title: article.title,
-        slug: article.slug,
-        excerpt: article.excerpt,
-        featuredImage: article.featuredImage || '/images/news1.jpg',
-        publishedAt: article.publishedAt,
-        category: article.category?.name || 'Uncategorized',
-        author: article.author?.name || 'Anonymous',
-      };
-    });
+    const formattedArticles = articles.map(article => ({
+      id: article.id,
+      title: article.title,
+      slug: article.slug,
+      excerpt: article.excerpt,
+      featuredImage: article.featuredImage || '/images/logo.png',
+      publishedAt: article.publishedAt,
+      category: article.category?.name || 'Uncategorized',
+      author: article.author?.name || 'Anonymous',
+    }));
 
     console.log('Returning formatted articles:', formattedArticles.length);
     return NextResponse.json(formattedArticles);
   } catch (error) {
     console.error('Error in GET /api/articles:', error);
+    console.error('Error details:', error instanceof Error ? error.message : error);
     return NextResponse.json(
       { error: 'Failed to fetch articles', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

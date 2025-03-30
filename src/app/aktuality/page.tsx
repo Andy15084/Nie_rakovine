@@ -25,10 +25,17 @@ export default function AktualityPage() {
     async function fetchArticles() {
       try {
         console.log('Fetching articles...');
-        const response = await fetch('/api/articles');
+        const response = await fetch('/api/articles', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         
         if (!response.ok) {
-          throw new Error('Failed to fetch articles');
+          const errorData = await response.json().catch(() => ({}));
+          console.error('API Error:', errorData);
+          throw new Error(errorData.details || 'Failed to fetch articles');
         }
 
         const data = await response.json();
@@ -106,11 +113,16 @@ export default function AktualityPage() {
                     <div key={article.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                       <div className="relative h-40">
                         <Image
-                          src={article.featuredImage || '/images/news1.jpg'}
+                          src={article.featuredImage || '/images/logo.png'}
                           alt={article.title}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover"
+                          onError={(e) => {
+                            // Fallback to logo if image fails to load
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/images/logo.png';
+                          }}
                         />
                       </div>
                       <div className="p-4">

@@ -15,12 +15,12 @@
     "seed": "ts-node -T prisma/seed.ts"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^1.4.0",
-    "@prisma/client": "^5.10.2",
+    "@prisma/client": "latest",
+    "@next-auth/prisma-adapter": "latest",
     "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "next": "14.1.0",
-    "next-auth": "^4.24.6",
+    "next-auth": "latest",
     "react": "^18",
     "react-dom": "^18"
   },

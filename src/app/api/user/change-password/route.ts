@@ -1,67 +1,46 @@
-import { getServerSession } from 'next-auth';
-import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { hash, compare } from 'bcryptjs';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { hash } from "bcryptjs";
+import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
 
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session) {
       return NextResponse.json(
-        { message: 'Unauthorized' },
+        { error: "You must be logged in to change your password" },
         { status: 401 }
       );
     }
 
-    const { currentPassword, newPassword } = await req.json();
+    const data = await request.json();
+    const { newPassword } = data;
 
-    if (!currentPassword || !newPassword) {
+    if (!newPassword || typeof newPassword !== "string") {
       return NextResponse.json(
-        { message: 'Missing required fields' },
+        { error: "Invalid password" },
         { status: 400 }
       );
     }
 
-    // Get user from database
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { message: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Verify current password
-    const isValid = await compare(currentPassword, user.password);
-    if (!isValid) {
-      return NextResponse.json(
-        { message: 'Current password is incorrect' },
-        { status: 400 }
-      );
-    }
-
-    // Hash new password
     const hashedPassword = await hash(newPassword, 12);
 
-    // Update password
     await prisma.user.update({
-      where: { email: session.user.email },
-      data: { password: hashedPassword },
+      where: {
+        email: session.user.email!,
+      },
+      data: {
+        password: hashedPassword,
+      },
     });
 
-    return NextResponse.json(
-      { message: 'Password updated successfully' },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: "Password updated successfully" });
   } catch (error) {
-    console.error('Error changing password:', error);
+    console.error("Error changing password:", error);
     return NextResponse.json(
-      { message: 'Error changing password' },
+      { error: "Failed to change password" },
       { status: 500 }
     );
   }
