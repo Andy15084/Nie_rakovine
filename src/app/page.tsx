@@ -23,7 +23,7 @@ export default function Home() {
               Together Against Cancer
             </h1>
             <p className="text-lg md:text-xl mb-8">
-              Join us in our mission to support cancer prevention and research
+              Join us in our missixon to support cancer prevention and research
             </p>
             <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full text-lg transition-colors">
               Donate Now
