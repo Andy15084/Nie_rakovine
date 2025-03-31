@@ -1,15 +1,7 @@
-import { PrismaClient, Role } from '@prisma/client';
-import { hash } from 'bcryptjs';
+const { PrismaClient } = require('@prisma/client');
+const { hash } = require('bcryptjs');
 
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-const prisma = global.prisma || new PrismaClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  global.prisma = prisma;
-}
+const prisma = new PrismaClient();
 
 async function main() {
   console.log('Starting seed...');
@@ -24,7 +16,7 @@ async function main() {
         email: 'admin@nierakovine.org',
         name: 'Admin User',
         password: adminPassword,
-        role: 'ADMIN' as Role,
+        role: 'ADMIN',
       },
     });
 
