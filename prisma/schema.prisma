@@ -10,8 +10,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = "postgres://postgres.parbgslwbwpjminakavx:jxr6EJuRLFGiC47A@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
-  directUrl = "postgresql://postgres:jxr6EJuRLFGiC47Au@db.parbgslwbwpjminakavx.supabase.co:5432/postgres"
+  url = "prisma+postgres://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMyODUzMzctZDYzZC00MzY1LTk5YzktZmMzOTAzYzAxZGZkIiwidGVuYW50X2lkIjoiZWEwYzM3OTY5NTZkOTNmN2MwN2IyNzJlNDFiMzMwOTM1YjBhOWYzYzRmMGEzYTI3YWViMjdkMDliMWNiNzhhNiIsImludGVybmFsX3NlY3JldCI6Ijk1M2FiYTc3LTU0YjYtNDg4Mi1iYTRmLTQzMTlkOGZkMWU0MSJ9.cc4N2XiJdZDHg_FiwaFX7dOpNi4Pr3HTHokvWcDGvdM"
 }
 
 enum Role {
