@@ -1,7 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
-const { hash } = require('bcryptjs');
+import { PrismaClient as PrismaClientType } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const db = new PrismaClientType();
 
 async function main() {
   console.log('Starting seed...');
@@ -9,7 +9,7 @@ async function main() {
   try {
     // Create admin user
     const adminPassword = await hash('admin123', 12);
-    const admin = await prisma.user.upsert({
+    const admin = await db.user.upsert({
       where: { email: 'admin@nierakovine.org' },
       update: {},
       create: {
@@ -47,7 +47,7 @@ async function main() {
     ];
 
     for (const category of categories) {
-      await prisma.category.upsert({
+      await db.category.upsert({
         where: { slug: category.slug },
         update: {},
         create: category,
@@ -68,5 +68,5 @@ main()
   })
   .finally(async () => {
     console.log('Seeding finished.');
-    await prisma.$disconnect();
+    await db.$disconnect();
   }); 
