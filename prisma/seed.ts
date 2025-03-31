@@ -1,12 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { hash } from 'bcryptjs';
 
-const prisma = new PrismaClient();
+const db = new PrismaClient();
 
 async function main() {
   // Create admin user
   const adminPassword = await hash('admin123', 12);
-  const admin = await prisma.user.upsert({
+  const admin = await db.user.upsert({
     where: { email: 'admin@nierakovine.org' },
     update: {},
     create: {
@@ -44,7 +44,7 @@ async function main() {
   ];
 
   for (const category of categories) {
-    await prisma.category.upsert({
+    await db.category.upsert({
       where: { slug: category.slug },
       update: {},
       create: category,
@@ -60,5 +60,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   }); 
