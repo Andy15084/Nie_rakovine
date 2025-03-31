@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url = "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWMyODUzMzctZDYzZC00MzY1LTk5YzktZmMzOTAzYzAxZGZkIiwidGVuYW50X2lkIjoiZWEwYzM3OTY5NTZkOTNmN2MwN2IyNzJlNDFiMzMwOTM1YjBhOWYzYzRmMGEzYTI3YWViMjdkMDliMWNiNzhhNiIsImludGVybmFsX3NlY3JldCI6Ijk1M2FiYTc3LTU0YjYtNDg4Mi1iYTRmLTQzMTlkOGZkMWU0MSJ9.cc4N2XiJdZDHg_FiwaFX7dOpNi4Pr3HTHokvWcDGvdM"
+  directUrl = "postgres://postgres.ec285337-d63d-4365-99c9-fc3903c01dfd:ec285337-d63d-4365-99c9-fc3903c01dfd@aws-0-us-east-1.pooler.supabase.com:5432/postgres"
 }
 
 enum Role {
