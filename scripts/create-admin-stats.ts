@@ -1,4 +1,6 @@
-import { prisma } from '../lib/db'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 async function createAdminStats() {
   const email = 'admin@nierakovine.org';
