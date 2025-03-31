@@ -12,7 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url = env("DATABASE_URL")
-  directUrl = "postgresql://postgres.parbgslwbwpjminakavx:postgres.parbgslwbwpjminakavx@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 enum Role {
