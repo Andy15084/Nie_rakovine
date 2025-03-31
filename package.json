@@ -2,17 +2,18 @@
   "name": "nie-rakovine",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && prisma db push && next build",
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
     "db:push": "prisma db push",
-    "db:seed": "ts-node -T prisma/seed.ts"
+    "db:seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "prisma": {
-    "seed": "ts-node -T prisma/seed.ts"
+    "seed": "node --loader ts-node/esm prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "latest",

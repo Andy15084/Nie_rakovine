@@ -1,7 +1,15 @@
-const { PrismaClient } = require('@prisma/client');
-const { hash } = require('bcryptjs');
+import { PrismaClient, Role } from '@prisma/client';
+import { hash } from 'bcryptjs';
 
-const db = new PrismaClient();
+declare global {
+  var prisma: PrismaClient | undefined;
+}
+
+const prisma = global.prisma || new PrismaClient();
+
+if (process.env.NODE_ENV !== 'production') {
+  global.prisma = prisma;
+}
 
 async function main() {
   console.log('Starting seed...');
@@ -9,14 +17,14 @@ async function main() {
   try {
     // Create admin user
     const adminPassword = await hash('admin123', 12);
-    const admin = await db.user.upsert({
+    const admin = await prisma.user.upsert({
       where: { email: 'admin@nierakovine.org' },
       update: {},
       create: {
         email: 'admin@nierakovine.org',
         name: 'Admin User',
         password: adminPassword,
-        role: 'ADMIN',
+        role: 'ADMIN' as Role,
       },
     });
 
@@ -47,7 +55,7 @@ async function main() {
     ];
 
     for (const category of categories) {
-      await db.category.upsert({
+      await prisma.category.upsert({
         where: { slug: category.slug },
         update: {},
         create: category,
@@ -68,5 +76,5 @@ main()
   })
   .finally(async () => {
     console.log('Seeding finished.');
-    await db.$disconnect();
+    await prisma.$disconnect();
   }); 
