@@ -6,12 +6,12 @@
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url = "postgres://postgres.parbgslwbwpjminakavx:jxr6EJuRLFGiC47A@aws-0-eu-central-1.pooler.supabase.com:6543/postgres"
+  directUrl = "postgresql://postgres:jxr6EJuRLFGiC47Au@db.parbgslwbwpjminakavx.supabase.co:5432/postgres"
 }
 
 enum Role {
